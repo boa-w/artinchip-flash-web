@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { AicDevice } from "../device/AicDevice";
 import { parseImageFile } from "../image/parser";
 import {
+  getAuthorizedAicUsbDevices,
   isWebUsbSupported,
   requestAicUsbDevice,
   WebUsbTransport
@@ -66,7 +67,11 @@ export function App() {
 
   const connect = useCallback(() => {
     void withBusy(async () => {
-      const usbDevice = await requestAicUsbDevice();
+      const authorizedDevices = await getAuthorizedAicUsbDevices();
+      const usbDevice = authorizedDevices[0] ?? (await requestAicUsbDevice());
+      if (authorizedDevices[0]) {
+        log("Using previously paired ArtInChip device");
+      }
       const transport = new WebUsbTransport(usbDevice);
       const aicDevice = new AicDevice(transport);
       await aicDevice.open();

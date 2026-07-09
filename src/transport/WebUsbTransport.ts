@@ -1,5 +1,10 @@
 import type { UsbTransport } from "./UsbTransport";
-import { UsbTransferError, UsbUnavailableError } from "./errors";
+import {
+  isAccessDenied,
+  UsbAccessDeniedError,
+  UsbTransferError,
+  UsbUnavailableError
+} from "./errors";
 
 export const AIC_VENDOR_ID = 0x33c3;
 export const AIC_PRODUCT_ID = 0x6677;
@@ -44,13 +49,20 @@ export class WebUsbTransport implements UsbTransport {
   }
 
   async open(): Promise<void> {
-    if (!this.device.opened) {
-      await this.device.open();
+    try {
+      if (!this.device.opened) {
+        await this.device.open();
+      }
+      if (!this.device.configuration) {
+        await this.device.selectConfiguration(1);
+      }
+      await this.device.claimInterface(AIC_INTERFACE_NUMBER);
+    } catch (error) {
+      if (isAccessDenied(error)) {
+        throw new UsbAccessDeniedError("Opening the ArtInChip USB device", error);
+      }
+      throw error;
     }
-    if (!this.device.configuration) {
-      await this.device.selectConfiguration(1);
-    }
-    await this.device.claimInterface(AIC_INTERFACE_NUMBER);
   }
 
   async close(): Promise<void> {
