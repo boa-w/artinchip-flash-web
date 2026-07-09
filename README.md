@@ -3,15 +3,19 @@
 Browser-based ArtInChip firmware flasher using WebUSB.
 
 This project is planned as a sibling of the native `artinchip-flash` Rust CLI/GUI.
-The first milestone is a Chromium-compatible WebUSB proof of concept that can:
+The current milestone is a Chromium-compatible WebUSB flasher that can:
 
 - request the ArtInChip upgrade device (`VID=0x33C3`, `PID=0x6677`);
 - claim the bulk interface;
 - send CBW/UPG commands;
 - read `GET_HWINFO`;
-- parse `.img` files in the browser.
+- parse `.img` files in the browser;
+- burn selected firmware components.
 
 See [docs/architecture.md](docs/architecture.md) for the initial architecture.
+
+Windows driver and permission setup is documented in
+[docs/windows-webusb.md](docs/windows-webusb.md).
 
 ## Development
 
@@ -46,3 +50,5 @@ The Worker currently exposes:
 
 Static frontend assets are produced by Vite into `dist/` and served by
 Wrangler according to `wrangler.jsonc`.
+
+Deployment details are in [docs/cloudflare-deploy.md](docs/cloudflare-deploy.md).

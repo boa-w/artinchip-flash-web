@@ -50,6 +50,7 @@
     "title": "烧录",
     "subtitle": "将选定的固件组件写入已连接的开发板",
     "resetAfterBurn": "烧录后重置设备",
+    "verboseLog": "详细协议日志",
     "overall": "总体进度",
     "component": "组件",
     "burnSelected": "烧录选定组件"

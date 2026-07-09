@@ -50,6 +50,7 @@
     "title": "Burn",
     "subtitle": "Write selected firmware components to the connected board",
     "resetAfterBurn": "Reset device after burn",
+    "verboseLog": "Verbose protocol log",
     "overall": "Overall",
     "component": "Component",
     "burnSelected": "Burn selected components"

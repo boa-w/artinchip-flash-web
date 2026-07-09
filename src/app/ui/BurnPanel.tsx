@@ -6,10 +6,12 @@ interface Props {
   deviceReady: boolean;
   busy: boolean;
   resetAfterBurn: boolean;
+  verboseLog: boolean;
   overallProgress: number;
   componentProgress: number;
   activeComponent: string;
   onResetAfterBurnChange: (value: boolean) => void;
+  onVerboseLogChange: (value: boolean) => void;
   onBurn: () => void;
 }
 
@@ -18,10 +20,12 @@ export function BurnPanel({
   deviceReady,
   busy,
   resetAfterBurn,
+  verboseLog,
   overallProgress,
   componentProgress,
   activeComponent,
   onResetAfterBurnChange,
+  onVerboseLogChange,
   onBurn
 }: Props) {
   const { t } = useTranslation();
@@ -46,6 +50,15 @@ export function BurnPanel({
           <RotateCcw size={17} aria-hidden="true" />
           {t("burn.resetAfterBurn")}
         </span>
+      </label>
+
+      <label className="toggleRow">
+        <input
+          type="checkbox"
+          checked={verboseLog}
+          onChange={(event) => onVerboseLogChange(event.currentTarget.checked)}
+        />
+        <span>{t("burn.verboseLog")}</span>
       </label>
 
       <div className="progressBlock">

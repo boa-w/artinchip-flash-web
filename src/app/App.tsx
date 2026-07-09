@@ -44,6 +44,8 @@ export function App() {
   });
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [resetAfterBurn, setResetAfterBurn] = useState(true);
+  const [verboseLog, setVerboseLog] = useState(false);
+  const verboseLogRef = useRef(false);
   const [overallProgress, setOverallProgress] = useState(0);
   const [componentProgress, setComponentProgress] = useState(0);
   const [activeComponent, setActiveComponent] = useState("");
@@ -82,7 +84,11 @@ export function App() {
         log(t("device.usingPrevious"));
       }
       const transport = new WebUsbTransport(usbDevice);
-      const aicDevice = new AicDevice(transport, (message) => log(message));
+      const aicDevice = new AicDevice(transport, (message) => {
+        if (verboseLogRef.current) {
+          log(message);
+        }
+      });
       await aicDevice.open();
       aicDeviceRef.current = aicDevice;
       setDevice((current) => ({
@@ -252,10 +258,15 @@ export function App() {
             deviceReady={device.connected}
             busy={device.busy}
             resetAfterBurn={resetAfterBurn}
+            verboseLog={verboseLog}
             overallProgress={overallProgress}
             componentProgress={componentProgress}
             activeComponent={activeComponent}
             onResetAfterBurnChange={setResetAfterBurn}
+            onVerboseLogChange={(value) => {
+              verboseLogRef.current = value;
+              setVerboseLog(value);
+            }}
             onBurn={startBurn}
           />
           <LogPanel logs={logs} onClear={() => setLogs([])} />
