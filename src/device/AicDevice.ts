@@ -145,15 +145,21 @@ export class AicDevice {
   }
 
   async waitReconnect(timeoutMs: number): Promise<void> {
+    if (this.transport.waitReconnect) {
+      await this.transport.waitReconnect(timeoutMs, (message) => this.logTrace(message));
+      this.inBuffer = new Uint8Array();
+      return;
+    }
+
     const deadline = Date.now() + timeoutMs;
     let lastError = "";
-    await this.transport.close().catch((error: unknown) => {
+    await this.withTimeout(this.transport.close(), "USB close", 5_000).catch((error: unknown) => {
       lastError = error instanceof Error ? error.message : String(error);
     });
 
     while (Date.now() < deadline) {
       try {
-        await this.transport.open();
+        await this.withTimeout(this.transport.open(), "USB open", 5_000);
         await this.sleep(RECONNECT_SETTLE_MS);
         this.inBuffer = new Uint8Array();
         this.logTrace("Reconnected to ArtInChip device");

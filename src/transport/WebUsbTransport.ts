@@ -11,6 +11,9 @@ export const AIC_PRODUCT_ID = 0x6677;
 export const AIC_INTERFACE_NUMBER = 0;
 export const AIC_BULK_OUT_ENDPOINT = 2;
 export const AIC_BULK_IN_ENDPOINT = 1;
+const OPEN_TIMEOUT_MS = 5_000;
+const RECONNECT_POLL_MS = 250;
+const RECONNECT_SETTLE_MS = 120;
 
 export function isWebUsbSupported(): boolean {
   return typeof navigator !== "undefined" && Boolean(navigator.usb);
@@ -36,7 +39,7 @@ export async function getAuthorizedAicUsbDevices(): Promise<USBDevice[]> {
 }
 
 export class WebUsbTransport implements UsbTransport {
-  constructor(private readonly device: USBDevice) {}
+  constructor(private device: USBDevice) {}
 
   get connected(): boolean {
     return this.device.opened;
@@ -51,12 +54,20 @@ export class WebUsbTransport implements UsbTransport {
   async open(): Promise<void> {
     try {
       if (!this.device.opened) {
-        await this.device.open();
+        await withTimeout(this.device.open(), "USB open", OPEN_TIMEOUT_MS);
       }
       if (!this.device.configuration) {
-        await this.device.selectConfiguration(1);
+        await withTimeout(
+          this.device.selectConfiguration(1),
+          "USB selectConfiguration",
+          OPEN_TIMEOUT_MS
+        );
       }
-      await this.device.claimInterface(AIC_INTERFACE_NUMBER);
+      await withTimeout(
+        this.device.claimInterface(AIC_INTERFACE_NUMBER),
+        "USB claimInterface",
+        OPEN_TIMEOUT_MS
+      );
     } catch (error) {
       if (isAccessDenied(error)) {
         throw new UsbAccessDeniedError("Opening the ArtInChip USB device", error);
@@ -70,11 +81,52 @@ export class WebUsbTransport implements UsbTransport {
       return;
     }
     try {
-      await this.device.releaseInterface(AIC_INTERFACE_NUMBER);
+      await withTimeout(
+        this.device.releaseInterface(AIC_INTERFACE_NUMBER),
+        "USB releaseInterface",
+        OPEN_TIMEOUT_MS
+      );
     } catch {
       // Some devices disconnect during upgrade; closing should still proceed.
     }
-    await this.device.close();
+    await withTimeout(this.device.close(), "USB close", OPEN_TIMEOUT_MS).catch(() => undefined);
+  }
+
+  async waitReconnect(timeoutMs: number, onTrace?: (message: string) => void): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    let lastError = "";
+
+    await this.close().catch((error: unknown) => {
+      lastError = error instanceof Error ? error.message : String(error);
+    });
+
+    // Give the updater a moment to drop the old USB instance before polling.
+    await sleep(RECONNECT_POLL_MS);
+
+    while (Date.now() < deadline) {
+      const devices = await getAuthorizedAicUsbDevices();
+      onTrace?.(`Reconnect poll: ${devices.length} authorized ArtInChip device(s)`);
+
+      for (const candidate of devices) {
+        this.device = candidate;
+        try {
+          await this.open();
+          await sleep(RECONNECT_SETTLE_MS);
+          onTrace?.("Reconnected through WebUSB");
+          return;
+        } catch (error) {
+          lastError = error instanceof Error ? error.message : String(error);
+          onTrace?.(`Reconnect candidate failed: ${lastError}`);
+        }
+      }
+
+      await sleep(RECONNECT_POLL_MS);
+    }
+
+    throw new Error(
+      lastError ||
+        "Timed out waiting for the ArtInChip device to reconnect. If the browser permission was lost, reconnect the board and click Connect again."
+    );
   }
 
   async transferOut(endpointNumber: number, data: Uint8Array): Promise<void> {
@@ -107,4 +159,25 @@ export class WebUsbTransport implements UsbTransport {
   async clearHalt(direction: "in" | "out", endpointNumber: number): Promise<void> {
     await this.device.clearHalt(direction, endpointNumber);
   }
+}
+
+async function withTimeout<T>(promise: Promise<T>, label: string, timeoutMs: number): Promise<T> {
+  let timeoutId: number | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs} ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+    }
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
