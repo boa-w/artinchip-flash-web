@@ -12,3 +12,37 @@ The first milestone is a Chromium-compatible WebUSB proof of concept that can:
 - parse `.img` files in the browser.
 
 See [docs/architecture.md](docs/architecture.md) for the initial architecture.
+
+## Development
+
+```sh
+npm install
+npm run dev
+```
+
+The local Vite dev server runs on localhost, which is a secure context for
+WebUSB permission prompts.
+
+## Validation
+
+```sh
+npm test
+npm run build
+```
+
+## Cloudflare
+
+This project is prepared for Cloudflare Workers Static Assets:
+
+```sh
+npm run cf:dev
+npm run deploy
+```
+
+The Worker currently exposes:
+
+- `/api/health`
+- `/api/version`
+
+Static frontend assets are produced by Vite into `dist/` and served by
+Wrangler according to `wrangler.jsonc`.

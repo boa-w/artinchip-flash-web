@@ -1,0 +1,31 @@
+export const CMD_GET_HWINFO = 0x00;
+export const CMD_GET_TRACEINFO = 0x01;
+export const CMD_WRITE = 0x02;
+export const CMD_READ = 0x03;
+export const CMD_EXEC = 0x04;
+export const CMD_RUN_SHELL_STR = 0x05;
+export const CMD_GET_MEM_BUF = 0x08;
+export const CMD_FREE_MEM_BUF = 0x09;
+export const CMD_SET_UPG_CFG = 0x0a;
+export const CMD_SET_UPG_END = 0x0b;
+export const CMD_GET_LOG_SIZE = 0x0c;
+export const CMD_GET_LOG_DATA = 0x0d;
+export const CMD_SET_FWC_META = 0x10;
+export const CMD_GET_BLOCK_SIZE = 0x11;
+export const CMD_SEND_FWC_DATA = 0x12;
+export const CMD_GET_FWC_CRC = 0x13;
+export const CMD_GET_FWC_BURN_RESULT = 0x14;
+export const CMD_GET_FWC_RUN_RESULT = 0x15;
+export const CMD_GET_STORAGE_MEDIA = 0x16;
+export const CMD_GET_PARTITION_TABLE = 0x17;
+export const CMD_READ_FWC_DATA = 0x18;
+export const CMD_SET_UART_ARGS = 0x19;
+
+export const UPG_MODE_FULL_DISK_UPGRADE = 0x00;
+export const UPG_MODE_PARTITION_UPGRADE = 0x01;
+export const UPG_MODE_BURN_USER_ID = 0x02;
+export const UPG_MODE_DUMP_PARTITION = 0x03;
+export const UPG_MODE_BURN_IMG_FORCE = 0x04;
+export const UPG_MODE_BURN_FROZEN = 0x05;
+
+export const FWC_META_SIZE = 512;
