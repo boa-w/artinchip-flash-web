@@ -10,4 +10,5 @@ export type BurnEvent =
 export interface BurnOptions {
   selectedParts: string[];
   resetAfterBurn: boolean;
+  burnTimeoutMs: number;
 }

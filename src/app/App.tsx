@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { AicDevice } from "../device/AicDevice";
+import { burnImage } from "../device/burnFlow";
+import type { BurnEvent } from "../device/events";
 import { parseImageFile } from "../image/parser";
 import {
   getAuthorizedAicUsbDevices,
@@ -38,6 +40,10 @@ export function App() {
     selectedParts: defaultParts
   });
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [resetAfterBurn, setResetAfterBurn] = useState(true);
+  const [overallProgress, setOverallProgress] = useState(0);
+  const [componentProgress, setComponentProgress] = useState(0);
+  const [activeComponent, setActiveComponent] = useState("");
 
   const log = useCallback((message: string, level: LogEntry["level"] = "info") => {
     setLogs((current) => [
@@ -113,6 +119,76 @@ export function App() {
     });
   }, [log, withBusy]);
 
+  const applyBurnEvent = useCallback(
+    (event: BurnEvent) => {
+      switch (event.type) {
+        case "log":
+          log(event.message);
+          break;
+        case "stage":
+          log(event.message);
+          break;
+        case "component-started":
+          setActiveComponent(event.name);
+          setComponentProgress(0);
+          log(`Component ${event.name} partition=${event.partition || "-"} size=${event.size}`);
+          break;
+        case "component-progress":
+          setActiveComponent(event.name);
+          setComponentProgress(event.total > 0 ? event.sent / event.total : 0);
+          break;
+        case "overall-progress":
+          setOverallProgress(event.total > 0 ? event.sent / event.total : 0);
+          break;
+        case "component-finished":
+          log(`Component finished: ${event.name}`);
+          break;
+        case "finished":
+          setOverallProgress(1);
+          setComponentProgress(1);
+          log("Burn completed successfully");
+          break;
+      }
+    },
+    [log]
+  );
+
+  const startBurn = useCallback(() => {
+    void withBusy(async () => {
+      const aicDevice = aicDeviceRef.current;
+      const parsed = image.parsed;
+      if (!aicDevice) {
+        throw new Error("No connected ArtInChip device");
+      }
+      if (!parsed) {
+        throw new Error("No firmware image selected");
+      }
+      const selected = image.selectedParts.join(", ") || "none";
+      const ok = window.confirm(
+        `This will burn selected firmware components to the connected ArtInChip board.\n\nImage: ${
+          parsed.fileName ?? "selected image"
+        }\nSelected parts: ${selected}\n\nContinue?`
+      );
+      if (!ok) {
+        log("Burn cancelled by user", "warn");
+        return;
+      }
+
+      setOverallProgress(0);
+      setComponentProgress(0);
+      setActiveComponent("");
+      log("Starting burn...");
+
+      for await (const event of burnImage(aicDevice, parsed, {
+        selectedParts: image.selectedParts,
+        resetAfterBurn,
+        burnTimeoutMs: 60_000
+      })) {
+        applyBurnEvent(event);
+      }
+    });
+  }, [applyBurnEvent, image.parsed, image.selectedParts, log, resetAfterBurn, withBusy]);
+
   const loadFile = useCallback(
     (file: File) => {
       void (async () => {
@@ -165,7 +241,17 @@ export function App() {
           <ImagePanel image={image} onFile={loadFile} onTogglePart={togglePart} />
         </div>
         <aside className="sideColumn">
-          <BurnPanel imageReady={Boolean(image.parsed)} deviceReady={device.connected} />
+          <BurnPanel
+            imageReady={Boolean(image.parsed)}
+            deviceReady={device.connected}
+            busy={device.busy}
+            resetAfterBurn={resetAfterBurn}
+            overallProgress={overallProgress}
+            componentProgress={componentProgress}
+            activeComponent={activeComponent}
+            onResetAfterBurnChange={setResetAfterBurn}
+            onBurn={startBurn}
+          />
           <LogPanel logs={logs} onClear={() => setLogs([])} />
         </aside>
       </div>
