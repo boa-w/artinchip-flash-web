@@ -73,7 +73,7 @@ export function App() {
         log("Using previously paired ArtInChip device");
       }
       const transport = new WebUsbTransport(usbDevice);
-      const aicDevice = new AicDevice(transport);
+      const aicDevice = new AicDevice(transport, (message) => log(message));
       await aicDevice.open();
       aicDeviceRef.current = aicDevice;
       setDevice((current) => ({
@@ -92,6 +92,7 @@ export function App() {
       if (!aicDevice) {
         throw new Error("No connected ArtInChip device");
       }
+      log("Reading device information...");
       const infoText = await aicDevice.deviceInfoText();
       setDevice((current) => ({ ...current, infoText }));
       log("Device information read successfully");
