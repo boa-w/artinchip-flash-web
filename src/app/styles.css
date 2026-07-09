@@ -72,6 +72,30 @@ input[type="checkbox"] {
   margin-bottom: 18px;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.langSwitcher {
+  min-height: 30px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #f0f4f8;
+  border: 1px solid #c9d2dc;
+  border-radius: 6px;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.langSwitcher:hover {
+  background: #e2e8f0;
+  border-color: #a0aec0;
+}
+
 .appHeader h1 {
   margin: 0;
   font-size: clamp(28px, 4vw, 42px);

@@ -1,0 +1,63 @@
+{
+  "header": {
+    "title": "ArtInChip WebUSB 烧录工具",
+    "subtitle": "基于 Chromium WebUSB 的本地浏览器烧录工作区。",
+    "version": "M1 POC"
+  },
+  "device": {
+    "title": "设备",
+    "subtitle": "通过 WebUSB 升级 ArtInChip 设备",
+    "connected": "已连接",
+    "disconnected": "未连接",
+    "connect": "连接",
+    "readInfo": "读取信息",
+    "disconnect": "断开连接",
+    "target": "目标",
+    "selected": "已选择",
+    "none": "无",
+    "noInfo": "尚未读取设备信息。",
+    "hint": "浏览器仅在用户触发权限提示后才能访问开发板。",
+    "usingPrevious": "使用之前配对的 ArtInChip 设备",
+    "connectedTo": "已连接到 {{label}}",
+    "noDevice": "未找到已连接的 ArtInChip 设备",
+    "readingInfo": "正在读取设备信息...",
+    "readSuccess": "设备信息读取成功",
+    "disconnectedLog": "已断开连接"
+  },
+  "image": {
+    "title": "镜像",
+    "subtitle": "在浏览器中本地解析固件",
+    "selectFile": "选择 .img",
+    "file": "文件",
+    "selectedImage": "已选择的镜像",
+    "platform": "平台",
+    "product": "产品",
+    "version": "版本",
+    "media": "介质",
+    "components": "组件",
+    "use": "使用",
+    "name": "名称",
+    "partition": "分区",
+    "size": "大小",
+    "crc": "CRC",
+    "auto": "自动",
+    "select": "选择 {{name}}",
+    "noTarget": "在此镜像中未找到 image.target.* 组件。",
+    "empty": "选择 ArtInChip `.img` 文件以检查其头部和 META 条目。",
+    "parsed": "已解析 {{name}}：{{count}} 个组件，{{size}} 字节"
+  },
+  "burn": {
+    "title": "烧录",
+    "subtitle": "将选定的固件组件写入已连接的开发板",
+    "resetAfterBurn": "烧录后重置设备",
+    "overall": "总体进度",
+    "component": "组件",
+    "burnSelected": "烧录选定组件"
+  },
+  "log": {
+    "title": "日志",
+    "clear": "清空",
+    "empty": "暂无日志条目。"
+  },
+  "unsupported": "WebUSB 不可用。请使用 Chrome 或 Edge 浏览器，通过 HTTPS 或 localhost 访问。"
+}

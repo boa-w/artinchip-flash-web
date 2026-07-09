@@ -1,4 +1,5 @@
 import { Flame, RotateCcw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   imageReady: boolean;
@@ -23,14 +24,15 @@ export function BurnPanel({
   onResetAfterBurnChange,
   onBurn
 }: Props) {
+  const { t } = useTranslation();
   const ready = imageReady && deviceReady && !busy;
 
   return (
     <section className="panel burnPanel">
       <div className="panelHeader">
         <div>
-          <h2>Burn</h2>
-          <p>Write selected firmware components to the connected board</p>
+          <h2>{t("burn.title")}</h2>
+          <p>{t("burn.subtitle")}</p>
         </div>
       </div>
 
@@ -42,13 +44,13 @@ export function BurnPanel({
         />
         <span>
           <RotateCcw size={17} aria-hidden="true" />
-          Reset device after burn
+          {t("burn.resetAfterBurn")}
         </span>
       </label>
 
       <div className="progressBlock">
         <div className="progressHeader">
-          <span>Overall</span>
+          <span>{t("burn.overall")}</span>
           <strong>{Math.round(overallProgress * 100)}%</strong>
         </div>
         <progress value={overallProgress} max={1} />
@@ -56,7 +58,7 @@ export function BurnPanel({
 
       <div className="progressBlock">
         <div className="progressHeader">
-          <span>{activeComponent || "Component"}</span>
+          <span>{activeComponent || t("burn.component")}</span>
           <strong>{Math.round(componentProgress * 100)}%</strong>
         </div>
         <progress value={componentProgress} max={1} />
@@ -64,7 +66,7 @@ export function BurnPanel({
 
       <button type="button" disabled={!ready} className="primaryAction" onClick={onBurn}>
         <Flame size={18} aria-hidden="true" />
-        Burn selected components
+        {t("burn.burnSelected")}
       </button>
     </section>
   );

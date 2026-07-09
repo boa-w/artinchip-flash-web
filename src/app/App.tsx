@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AicDevice } from "../device/AicDevice";
 import { burnImage } from "../device/burnFlow";
 import type { BurnEvent } from "../device/events";
@@ -13,6 +14,7 @@ import "./styles.css";
 import { BurnPanel } from "./ui/BurnPanel";
 import { DevicePanel } from "./ui/DevicePanel";
 import { ImagePanel } from "./ui/ImagePanel";
+import { LanguageSwitcher } from "./ui/LanguageSwitcher";
 import { LogPanel } from "./ui/LogPanel";
 import type { DeviceState, ImageState, LogEntry } from "./state";
 
@@ -27,6 +29,7 @@ function nowLabel(): string {
 }
 
 export function App() {
+  const { t } = useTranslation();
   const aicDeviceRef = useRef<AicDevice | null>(null);
   const [device, setDevice] = useState<DeviceState>({
     supported: isWebUsbSupported(),
@@ -76,7 +79,7 @@ export function App() {
       const authorizedDevices = await getAuthorizedAicUsbDevices();
       const usbDevice = authorizedDevices[0] ?? (await requestAicUsbDevice());
       if (authorizedDevices[0]) {
-        log("Using previously paired ArtInChip device");
+        log(t("device.usingPrevious"));
       }
       const transport = new WebUsbTransport(usbDevice);
       const aicDevice = new AicDevice(transport, (message) => log(message));
@@ -88,22 +91,22 @@ export function App() {
         label: transport.label,
         infoText: current.infoText
       }));
-      log(`Connected to ${transport.label}`);
+      log(t("device.connectedTo", { label: transport.label }));
     });
-  }, [log, withBusy]);
+  }, [log, withBusy, t]);
 
   const readInfo = useCallback(() => {
     void withBusy(async () => {
       const aicDevice = aicDeviceRef.current;
       if (!aicDevice) {
-        throw new Error("No connected ArtInChip device");
+        throw new Error(t("device.noDevice"));
       }
-      log("Reading device information...");
+      log(t("device.readingInfo"));
       const infoText = await aicDevice.deviceInfoText();
       setDevice((current) => ({ ...current, infoText }));
-      log("Device information read successfully");
+      log(t("device.readSuccess"));
     });
-  }, [log, withBusy]);
+  }, [log, withBusy, t]);
 
   const disconnect = useCallback(() => {
     void withBusy(async () => {
@@ -115,9 +118,9 @@ export function App() {
         label: "",
         infoText: ""
       }));
-      log("Disconnected");
+      log(t("device.disconnectedLog"));
     });
-  }, [log, withBusy]);
+  }, [log, withBusy, t]);
 
   const applyBurnEvent = useCallback(
     (event: BurnEvent) => {
@@ -202,13 +205,13 @@ export function App() {
             parsed,
             selectedParts: selectedParts.length > 0 ? selectedParts : defaultParts
           });
-          log(`Parsed ${file.name}: ${parsed.metas.length} component(s), ${parsed.totalSize.toLocaleString()} bytes`);
+          log(t("image.parsed", { name: file.name, count: parsed.metas.length, size: parsed.totalSize.toLocaleString() }));
         } catch (error) {
           log(error instanceof Error ? error.message : String(error), "error");
         }
       })();
     },
-    [log]
+    [log, t]
   );
 
   const togglePart = useCallback((part: string) => {
@@ -224,10 +227,13 @@ export function App() {
     <main className="appShell">
       <header className="appHeader">
         <div>
-          <h1>ArtInChip WebUSB Flasher</h1>
-          <p>Local browser flashing workspace for Chromium-compatible WebUSB.</p>
+          <h1>{t("header.title")}</h1>
+          <p>{t("header.subtitle")}</p>
         </div>
-        <div className="versionBadge">M1 POC</div>
+        <div className="headerRight">
+          <div className="versionBadge">{t("header.version")}</div>
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <div className="workspace">

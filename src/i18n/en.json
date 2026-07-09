@@ -1,0 +1,63 @@
+{
+  "header": {
+    "title": "ArtInChip WebUSB Flasher",
+    "subtitle": "Local browser flashing workspace for Chromium-compatible WebUSB.",
+    "version": "M1 POC"
+  },
+  "device": {
+    "title": "Device",
+    "subtitle": "ArtInChip upgrade device over WebUSB",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connect": "Connect",
+    "readInfo": "Read Info",
+    "disconnect": "Disconnect",
+    "target": "Target",
+    "selected": "Selected",
+    "none": "None",
+    "noInfo": "No device information read yet.",
+    "hint": "The browser can only access the board after a user-triggered permission prompt.",
+    "usingPrevious": "Using previously paired ArtInChip device",
+    "connectedTo": "Connected to {{label}}",
+    "noDevice": "No connected ArtInChip device",
+    "readingInfo": "Reading device information...",
+    "readSuccess": "Device information read successfully",
+    "disconnectedLog": "Disconnected"
+  },
+  "image": {
+    "title": "Image",
+    "subtitle": "Parse firmware locally in the browser",
+    "selectFile": "Select .img",
+    "file": "File",
+    "selectedImage": "Selected image",
+    "platform": "Platform",
+    "product": "Product",
+    "version": "Version",
+    "media": "Media",
+    "components": "Components",
+    "use": "Use",
+    "name": "Name",
+    "partition": "Partition",
+    "size": "Size",
+    "crc": "CRC",
+    "auto": "Auto",
+    "select": "Select {{name}}",
+    "noTarget": "No image.target.* components found in this image.",
+    "empty": "Select an ArtInChip `.img` file to inspect its header and META entries.",
+    "parsed": "Parsed {{name}}: {{count}} component(s), {{size}} bytes"
+  },
+  "burn": {
+    "title": "Burn",
+    "subtitle": "Write selected firmware components to the connected board",
+    "resetAfterBurn": "Reset device after burn",
+    "overall": "Overall",
+    "component": "Component",
+    "burnSelected": "Burn selected components"
+  },
+  "log": {
+    "title": "Log",
+    "clear": "Clear",
+    "empty": "No log entries yet."
+  },
+  "unsupported": "WebUSB is unavailable. Use Chrome or Edge over HTTPS or localhost."
+}

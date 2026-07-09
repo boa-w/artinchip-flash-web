@@ -1,4 +1,5 @@
 import { FileUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ImageState } from "../state";
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function ImagePanel({ image, onFile, onTogglePart }: Props) {
+  const { t } = useTranslation();
   const parsed = image.parsed;
   const targetMetas = parsed?.metas.filter((meta) => meta.name.startsWith("image.target.")) ?? [];
 
@@ -15,12 +17,12 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
     <section className="panel imagePanel">
       <div className="panelHeader">
         <div>
-          <h2>Image</h2>
-          <p>Parse firmware locally in the browser</p>
+          <h2>{t("image.title")}</h2>
+          <p>{t("image.subtitle")}</p>
         </div>
         <label className="fileButton">
           <FileUp size={18} aria-hidden="true" />
-          Select .img
+          {t("image.selectFile")}
           <input
             type="file"
             accept=".img,application/octet-stream"
@@ -39,27 +41,27 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
         <>
           <div className="summaryGrid">
             <div>
-              <span>File</span>
-              <strong>{parsed.fileName ?? "Selected image"}</strong>
+              <span>{t("image.file")}</span>
+              <strong>{parsed.fileName ?? t("image.selectedImage")}</strong>
             </div>
             <div>
-              <span>Platform</span>
+              <span>{t("image.platform")}</span>
               <strong>{parsed.header.platform || "-"}</strong>
             </div>
             <div>
-              <span>Product</span>
+              <span>{t("image.product")}</span>
               <strong>{parsed.header.product || "-"}</strong>
             </div>
             <div>
-              <span>Version</span>
+              <span>{t("image.version")}</span>
               <strong>{parsed.header.version || "-"}</strong>
             </div>
             <div>
-              <span>Media</span>
+              <span>{t("image.media")}</span>
               <strong>{parsed.header.mediaType || "-"}</strong>
             </div>
             <div>
-              <span>Components</span>
+              <span>{t("image.components")}</span>
               <strong>{parsed.metas.length}</strong>
             </div>
           </div>
@@ -68,11 +70,11 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
             <table>
               <thead>
                 <tr>
-                  <th>Use</th>
-                  <th>Name</th>
-                  <th>Partition</th>
-                  <th>Size</th>
-                  <th>CRC</th>
+                  <th>{t("image.use")}</th>
+                  <th>{t("image.name")}</th>
+                  <th>{t("image.partition")}</th>
+                  <th>{t("image.size")}</th>
+                  <th>{t("image.crc")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -88,10 +90,10 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
                             type="checkbox"
                             checked={checked}
                             onChange={() => onTogglePart(key)}
-                            aria-label={`Select ${meta.name}`}
+                            aria-label={t("image.select", { name: meta.name })}
                           />
                         ) : (
-                          <span className="fixedUse">Auto</span>
+                          <span className="fixedUse">{t("image.auto")}</span>
                         )}
                       </td>
                       <td>{meta.name}</td>
@@ -106,11 +108,11 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
           </div>
 
           {targetMetas.length === 0 && (
-            <div className="notice">No image.target.* components found in this image.</div>
+            <div className="notice">{t("image.noTarget")}</div>
           )}
         </>
       ) : (
-        <div className="empty">Select an ArtInChip `.img` file to inspect its header and META entries.</div>
+        <div className="empty">{t("image.empty")}</div>
       )}
     </section>
   );

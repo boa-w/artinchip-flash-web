@@ -1,4 +1,5 @@
 import { Cable, Info, PlugZap, Unplug } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { DeviceState } from "../state";
 
 interface Props {
@@ -9,53 +10,54 @@ interface Props {
 }
 
 export function DevicePanel({ device, onConnect, onReadInfo, onDisconnect }: Props) {
+  const { t } = useTranslation();
   return (
     <section className="panel">
       <div className="panelHeader">
         <div>
-          <h2>Device</h2>
-          <p>ArtInChip upgrade device over WebUSB</p>
+          <h2>{t("device.title")}</h2>
+          <p>{t("device.subtitle")}</p>
         </div>
         <span className={device.connected ? "status ok" : "status"} aria-live="polite">
-          {device.connected ? "Connected" : "Disconnected"}
+          {device.connected ? t("device.connected") : t("device.disconnected")}
         </span>
       </div>
 
       {!device.supported && (
         <div className="notice warn">
-          WebUSB is unavailable. Use Chrome or Edge over HTTPS or localhost.
+          {t("unsupported")}
         </div>
       )}
 
       <div className="toolbar">
         <button type="button" onClick={onConnect} disabled={!device.supported || device.busy}>
           <PlugZap size={18} aria-hidden="true" />
-          Connect
+          {t("device.connect")}
         </button>
         <button type="button" onClick={onReadInfo} disabled={!device.connected || device.busy}>
           <Info size={18} aria-hidden="true" />
-          Read Info
+          {t("device.readInfo")}
         </button>
         <button type="button" onClick={onDisconnect} disabled={!device.connected || device.busy}>
           <Unplug size={18} aria-hidden="true" />
-          Disconnect
+          {t("device.disconnect")}
         </button>
       </div>
 
       <div className="kv">
-        <span>Target</span>
+        <span>{t("device.target")}</span>
         <strong>VID 0x33c3 / PID 0x6677</strong>
-        <span>Selected</span>
-        <strong>{device.label || "None"}</strong>
+        <span>{t("device.selected")}</span>
+        <strong>{device.label || t("device.none")}</strong>
       </div>
 
       <pre className="deviceInfo">
-        {device.infoText || "No device information read yet."}
+        {device.infoText || t("device.noInfo")}
       </pre>
 
       <div className="hint">
         <Cable size={16} aria-hidden="true" />
-        The browser can only access the board after a user-triggered permission prompt.
+        {t("device.hint")}
       </div>
     </section>
   );
