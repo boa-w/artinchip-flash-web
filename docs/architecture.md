@@ -127,7 +127,7 @@ class AicDevice {
 }
 ```
 
-The first proof of concept only needs `getHwInfo`.
+The initial device-info milestone only needs `getHwInfo`.
 
 ## Protocol Migration Map
 
@@ -183,7 +183,7 @@ the interface again.
 - Add architecture document.
 - Choose TypeScript/Vite structure.
 
-### M1 - WebUSB Device Info POC
+### M1 - WebUSB Device Info
 
 - Scaffold Vite app.
 - Implement `WebUsbTransport`.
@@ -197,7 +197,7 @@ the interface again.
 - Add tests with synthetic fixtures.
 - Show image summary and component table in UI.
 
-### M3 - Burn Flow POC
+### M3 - Burn Flow
 
 - Implement selected component plan.
 - Implement `SET_UPG_CFG`, `SET_FWC_META`, `GET_BLOCK_SIZE`,

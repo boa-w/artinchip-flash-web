@@ -2,7 +2,18 @@
   "header": {
     "title": "ArtInChip WebUSB Flasher",
     "subtitle": "Local browser flashing workspace for Chromium-compatible WebUSB.",
-    "version": "M1 POC"
+    "version": "v0.1 Beta"
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "flow": {
+    "label": "Flashing workflow",
+    "connect": "Connect",
+    "readInfo": "Read Info",
+    "selectImage": "Select Image",
+    "burn": "Burn"
   },
   "device": {
     "title": "Device",
@@ -53,7 +64,18 @@
     "verboseLog": "Verbose protocol log",
     "overall": "Overall",
     "component": "Component",
-    "burnSelected": "Burn selected components"
+    "burnSelected": "Burn selected components",
+    "starting": "Starting burn...",
+    "disabledUnsupported": "WebUSB is unavailable in this browser.",
+    "disabledBusy": "Another operation is running.",
+    "disabledDevice": "Connect an ArtInChip device first.",
+    "disabledImage": "Select a firmware image first.",
+    "summaryTitle": "Burn summary",
+    "summaryImage": "Image",
+    "summaryComponents": "Components",
+    "summaryParts": "Selected parts",
+    "summaryReset": "Reset",
+    "summaryDuration": "Duration"
   },
   "log": {
     "title": "Log",

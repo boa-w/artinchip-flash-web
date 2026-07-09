@@ -13,10 +13,12 @@ import {
 import "./styles.css";
 import { BurnPanel } from "./ui/BurnPanel";
 import { DevicePanel } from "./ui/DevicePanel";
+import { FlowStatus, type FlowStep } from "./ui/FlowStatus";
 import { ImagePanel } from "./ui/ImagePanel";
 import { LanguageSwitcher } from "./ui/LanguageSwitcher";
 import { LogPanel } from "./ui/LogPanel";
 import type { DeviceState, ImageState, LogEntry } from "./state";
+import type { BurnSummary } from "./ui/BurnPanel";
 
 const defaultParts = ["spl", "env", "os"];
 
@@ -49,6 +51,7 @@ export function App() {
   const [overallProgress, setOverallProgress] = useState(0);
   const [componentProgress, setComponentProgress] = useState(0);
   const [activeComponent, setActiveComponent] = useState("");
+  const [burnSummary, setBurnSummary] = useState<BurnSummary | null>(null);
 
   const log = useCallback((message: string, level: LogEntry["level"] = "info") => {
     setLogs((current) => [
@@ -186,17 +189,30 @@ export function App() {
       setOverallProgress(0);
       setComponentProgress(0);
       setActiveComponent("");
-      log("Starting burn...");
+      setBurnSummary(null);
+      log(t("burn.starting"));
 
+      const startedAt = Date.now();
+      let completedComponents = 0;
       for await (const event of burnImage(aicDevice, parsed, {
         selectedParts: image.selectedParts,
         resetAfterBurn,
         burnTimeoutMs: 60_000
       })) {
+        if (event.type === "component-finished") {
+          completedComponents += 1;
+        }
         applyBurnEvent(event);
       }
+      setBurnSummary({
+        imageName: parsed.fileName ?? t("image.selectedImage"),
+        componentCount: completedComponents,
+        selectedParts: selected,
+        resetAfterBurn,
+        durationMs: Date.now() - startedAt
+      });
     });
-  }, [applyBurnEvent, image.parsed, image.selectedParts, log, resetAfterBurn, withBusy]);
+  }, [applyBurnEvent, image.parsed, image.selectedParts, log, resetAfterBurn, t, withBusy]);
 
   const loadFile = useCallback(
     (file: File) => {
@@ -211,6 +227,7 @@ export function App() {
             parsed,
             selectedParts: selectedParts.length > 0 ? selectedParts : defaultParts
           });
+          setBurnSummary(null);
           log(t("image.parsed", { name: file.name, count: parsed.metas.length, size: parsed.totalSize.toLocaleString() }));
         } catch (error) {
           log(error instanceof Error ? error.message : String(error), "error");
@@ -227,7 +244,23 @@ export function App() {
         ? current.selectedParts.filter((item) => item !== part)
         : [...current.selectedParts, part]
     }));
+    setBurnSummary(null);
   }, []);
+
+  const burnDisabledReason = getBurnDisabledReason({
+    supported: device.supported,
+    busy: device.busy,
+    connected: device.connected,
+    imageReady: Boolean(image.parsed),
+    t
+  });
+  const flowSteps = buildFlowSteps({
+    connected: device.connected,
+    infoReady: Boolean(device.infoText),
+    imageReady: Boolean(image.parsed),
+    burnDone: Boolean(burnSummary),
+    t
+  });
 
   return (
     <main className="appShell">
@@ -241,6 +274,8 @@ export function App() {
           <LanguageSwitcher />
         </div>
       </header>
+
+      <FlowStatus steps={flowSteps} />
 
       <div className="workspace">
         <div className="mainColumn">
@@ -257,11 +292,13 @@ export function App() {
             imageReady={Boolean(image.parsed)}
             deviceReady={device.connected}
             busy={device.busy}
+            disabledReason={burnDisabledReason}
             resetAfterBurn={resetAfterBurn}
             verboseLog={verboseLog}
             overallProgress={overallProgress}
             componentProgress={componentProgress}
             activeComponent={activeComponent}
+            summary={burnSummary}
             onResetAfterBurnChange={setResetAfterBurn}
             onVerboseLogChange={(value) => {
               verboseLogRef.current = value;
@@ -274,4 +311,79 @@ export function App() {
       </div>
     </main>
   );
+}
+
+function getBurnDisabledReason({
+  supported,
+  busy,
+  connected,
+  imageReady,
+  t
+}: {
+  supported: boolean;
+  busy: boolean;
+  connected: boolean;
+  imageReady: boolean;
+  t: (key: string) => string;
+}): string {
+  if (!supported) {
+    return t("burn.disabledUnsupported");
+  }
+  if (busy) {
+    return t("burn.disabledBusy");
+  }
+  if (!connected) {
+    return t("burn.disabledDevice");
+  }
+  if (!imageReady) {
+    return t("burn.disabledImage");
+  }
+  return "";
+}
+
+function buildFlowSteps({
+  connected,
+  infoReady,
+  imageReady,
+  burnDone,
+  t
+}: {
+  connected: boolean;
+  infoReady: boolean;
+  imageReady: boolean;
+  burnDone: boolean;
+  t: (key: string) => string;
+}): FlowStep[] {
+  const activeKey = !connected
+    ? "connect"
+    : !infoReady
+      ? "readInfo"
+      : !imageReady
+        ? "selectImage"
+        : !burnDone
+          ? "burn"
+          : "";
+
+  return [
+    {
+      key: "connect",
+      label: t("flow.connect"),
+      state: connected ? "done" : activeKey === "connect" ? "active" : "pending"
+    },
+    {
+      key: "readInfo",
+      label: t("flow.readInfo"),
+      state: infoReady ? "done" : activeKey === "readInfo" ? "active" : "pending"
+    },
+    {
+      key: "selectImage",
+      label: t("flow.selectImage"),
+      state: imageReady ? "done" : activeKey === "selectImage" ? "active" : "pending"
+    },
+    {
+      key: "burn",
+      label: t("flow.burn"),
+      state: burnDone ? "done" : activeKey === "burn" ? "active" : "pending"
+    }
+  ];
 }

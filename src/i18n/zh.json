@@ -2,7 +2,18 @@
   "header": {
     "title": "ArtInChip WebUSB 烧录工具",
     "subtitle": "基于 Chromium WebUSB 的本地浏览器烧录工作区。",
-    "version": "M1 POC"
+    "version": "v0.1 Beta"
+  },
+  "common": {
+    "yes": "是",
+    "no": "否"
+  },
+  "flow": {
+    "label": "烧录流程",
+    "connect": "连接设备",
+    "readInfo": "读取信息",
+    "selectImage": "选择镜像",
+    "burn": "烧录"
   },
   "device": {
     "title": "设备",
@@ -53,7 +64,18 @@
     "verboseLog": "详细协议日志",
     "overall": "总体进度",
     "component": "组件",
-    "burnSelected": "烧录选定组件"
+    "burnSelected": "烧录选定组件",
+    "starting": "开始烧录...",
+    "disabledUnsupported": "当前浏览器不支持 WebUSB。",
+    "disabledBusy": "当前正在执行其它操作。",
+    "disabledDevice": "请先连接 ArtInChip 设备。",
+    "disabledImage": "请先选择固件镜像。",
+    "summaryTitle": "烧录摘要",
+    "summaryImage": "镜像",
+    "summaryComponents": "组件数",
+    "summaryParts": "已选分区",
+    "summaryReset": "重置",
+    "summaryDuration": "耗时"
   },
   "log": {
     "title": "日志",
