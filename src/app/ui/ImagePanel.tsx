@@ -1,4 +1,5 @@
-import { FileUp } from "lucide-react";
+import { FileCheck2, FileUp } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ImageState } from "../state";
 
@@ -10,8 +11,19 @@ interface Props {
 
 export function ImagePanel({ image, onFile, onTogglePart }: Props) {
   const { t } = useTranslation();
+  const [dragging, setDragging] = useState(false);
   const parsed = image.parsed;
   const targetMetas = parsed?.metas.filter((meta) => meta.name.startsWith("image.target.")) ?? [];
+  const selectedTargetCount = targetMetas.filter((meta) => {
+    const key = meta.name.replace(/^image\.target\./, "");
+    return image.selectedParts.includes(key) || image.selectedParts.includes(meta.partition);
+  }).length;
+
+  const acceptFile = (file: File | undefined) => {
+    if (file) {
+      onFile(file);
+    }
+  };
 
   return (
     <section className="panel imagePanel">
@@ -35,6 +47,31 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
             }}
           />
         </label>
+      </div>
+
+      <div
+        className={`imageDropZone ${dragging ? "dragging" : ""}`}
+        onDragEnter={(event) => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragOver={(event) => event.preventDefault()}
+        onDragLeave={(event) => {
+          if (event.currentTarget === event.target) {
+            setDragging(false);
+          }
+        }}
+        onDrop={(event) => {
+          event.preventDefault();
+          setDragging(false);
+          acceptFile(event.dataTransfer.files[0]);
+        }}
+      >
+        <FileCheck2 size={20} aria-hidden="true" />
+        <div>
+          <strong>{parsed?.fileName ?? t("image.dropTitle")}</strong>
+          <span>{t("image.dropHint")}</span>
+        </div>
       </div>
 
       {parsed ? (
@@ -66,6 +103,16 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
             </div>
           </div>
 
+          <div className="componentToolbar">
+            <strong>{t("image.componentPlan")}</strong>
+            <span>
+              {t("image.selectedCount", {
+                selected: selectedTargetCount,
+                total: targetMetas.length
+              })}
+            </span>
+          </div>
+
           <div className="tableWrap">
             <table>
               <thead>
@@ -93,7 +140,7 @@ export function ImagePanel({ image, onFile, onTogglePart }: Props) {
                             aria-label={t("image.select", { name: meta.name })}
                           />
                         ) : (
-                          <span className="fixedUse">{t("image.auto")}</span>
+                          <span className="requiredBadge">{t("image.required")}</span>
                         )}
                       </td>
                       <td>{meta.name}</td>

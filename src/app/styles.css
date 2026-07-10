@@ -194,6 +194,11 @@ input[type="checkbox"] {
   align-items: center;
 }
 
+.panelActions {
+  display: flex;
+  gap: 8px;
+}
+
 .panel h2 {
   margin: 0;
   font-size: 20px;
@@ -278,6 +283,41 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
+.imageDropZone {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px dashed #b8c7d4;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #536270;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.imageDropZone.dragging {
+  border-color: #2f6f9f;
+  background: #eef7fb;
+}
+
+.imageDropZone div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.imageDropZone strong,
+.imageDropZone span {
+  overflow-wrap: anywhere;
+}
+
+.imageDropZone span {
+  color: #718291;
+  font-size: 13px;
+}
+
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -298,6 +338,16 @@ input[type="checkbox"] {
   overflow: auto;
   border: 1px solid #d8e0e8;
   border-radius: 6px;
+}
+
+.componentToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #536270;
+  font-size: 14px;
 }
 
 table {
@@ -330,6 +380,19 @@ tr:last-child td {
   min-height: 24px;
   align-items: center;
   color: #536270;
+}
+
+.requiredBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 999px;
+  border: 1px solid #b9d5c0;
+  background: #f0faf3;
+  color: #276738;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 650;
 }
 
 .empty {
@@ -493,6 +556,12 @@ progress {
 
   .appHeader,
   .panelHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panelActions,
+  .componentToolbar {
     align-items: stretch;
     flex-direction: column;
   }

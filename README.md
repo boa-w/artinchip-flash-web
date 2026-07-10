@@ -52,3 +52,7 @@ Static frontend assets are produced by Vite into `dist/` and served by
 Wrangler according to `wrangler.jsonc`.
 
 Deployment details are in [docs/cloudflare-deploy.md](docs/cloudflare-deploy.md).
+
+The recommended design for recent local images and optional cloud firmware
+storage is documented in
+[docs/image-history-storage.md](docs/image-history-storage.md).

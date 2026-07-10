@@ -39,6 +39,8 @@
     "title": "Image",
     "subtitle": "Parse firmware locally in the browser",
     "selectFile": "Select .img",
+    "dropTitle": "Drop firmware image",
+    "dropHint": "Accepts .img files and reads them only in this browser",
     "file": "File",
     "selectedImage": "Selected image",
     "platform": "Platform",
@@ -52,6 +54,9 @@
     "size": "Size",
     "crc": "CRC",
     "auto": "Auto",
+    "required": "Required",
+    "componentPlan": "Component plan",
+    "selectedCount": "{{selected}} / {{total}} target components selected",
     "select": "Select {{name}}",
     "noTarget": "No image.target.* components found in this image.",
     "empty": "Select an ArtInChip `.img` file to inspect its header and META entries.",
@@ -79,6 +84,7 @@
   },
   "log": {
     "title": "Log",
+    "export": "Export",
     "clear": "Clear",
     "empty": "No log entries yet."
   },

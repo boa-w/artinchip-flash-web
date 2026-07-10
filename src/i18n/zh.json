@@ -39,6 +39,8 @@
     "title": "镜像",
     "subtitle": "在浏览器中本地解析固件",
     "selectFile": "选择 .img",
+    "dropTitle": "拖入固件镜像",
+    "dropHint": "支持 .img 文件，文件只在本地浏览器中读取",
     "file": "文件",
     "selectedImage": "已选择的镜像",
     "platform": "平台",
@@ -52,6 +54,9 @@
     "size": "大小",
     "crc": "CRC",
     "auto": "自动",
+    "required": "必需",
+    "componentPlan": "组件计划",
+    "selectedCount": "已选 {{selected}} / {{total}} 个目标组件",
     "select": "选择 {{name}}",
     "noTarget": "在此镜像中未找到 image.target.* 组件。",
     "empty": "选择 ArtInChip `.img` 文件以检查其头部和 META 条目。",
@@ -79,6 +84,7 @@
   },
   "log": {
     "title": "日志",
+    "export": "导出",
     "clear": "清空",
     "empty": "暂无日志条目。"
   },
